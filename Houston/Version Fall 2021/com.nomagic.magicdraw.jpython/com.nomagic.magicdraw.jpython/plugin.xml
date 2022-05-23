@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugin
+	id="com.nomagic.magicdraw.jpython"
+	name="JPython interpreter"
+	version="2.0"
+	provider-name="No Magic"
+	class="com.nomagic.magicdraw.jpython.JPythonStartup">
+
+	<requires>
+	   <api version="1.0"/>
+	   <required-plugin id="AutomatonPlugin" name="Automaton"/>
+	</requires>
+
+	<runtime>
+	   <library name="jpython.jar"/>
+	   <library name="jpython_api.jar"/>
+	</runtime>
+</plugin>

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugin
+	id="com.nomagic.magicdraw.eclipseocl"
+	name="Eclipse OCL plugin"
+	version="1.0"
+	ownClassloader="true"
+	provider-name="No Magic"
+	class="com.nomagic.magicdraw.eclipseocl.EclipseOclPlugin">
+
+	<requires>
+	    <api version="1.0"/>
+	</requires>
+
+	<runtime>
+		<library name="eclipseocl.jar"/>
+		<library name="eclipseocl_api.jar"/>
+		<library name="lib/lpg.runtime.java_2.0.17.v201004271640.jar"/>
+		<library name="lib/org.eclipse.ocl.common_1.4.100.v20160613-1351.jar"/>
+		<library name="lib/org.eclipse.ocl.ecore_3.6.100.v20160613-1351.jar"/>
+		<library name="lib/org.eclipse.ocl_3.6.100.v20160613-1351.jar"/>
+	</runtime>
+</plugin>

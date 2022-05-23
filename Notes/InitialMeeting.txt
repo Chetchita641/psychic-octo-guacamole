@@ -1,0 +1,75 @@
+Running a couple of years
+Expose students to what to expect in the Navy
+Research project
+Cognitive assistant to help an engineer in Navy
+Basically a computerized "expert" (Clippy?)
+Not syntax but content
+  - ie character is said, but not introduced (in a novel)
+  - "is the model good?"
+
+Requirements model:
+  Start with a description / objectives
+  Dynamically engages with the engineer 
+  (Checklist style??)
+  Have you thought of this scenario? ("lose power on grid")
+  Safety critical things: Say, need two different commands to confirm an action (safety and trigger)
+    Have you considered a case where firing happens before safety?
+
+Have a basic proof of concept
+
+My work
+  1) Take the tool and personalize it
+    At a click of a button, all scenarios are laid out
+    (Need to converge)
+    a) How to prioritize
+    b) How to capture instances where the user doesn't care about some scenarios
+  2) Moving from structural aspects towards semantics
+
+How work is done
+  Microsoft teams
+  Meet once a week (teams standup)
+  Help out and collaborate 
+  Basic sprints
+  Not super formal
+  Hybrid development and research project
+  Individual work is decoupled, but still working together
+
+Next steps:
+  read some papers
+
+Prototype:
+  Developed by an all-star student
+  Document and video demonstration and repo
+
+Open to any avenues for progress
+
+Goal for the summer:
+  functionally complete-ish
+
+Student findings:
+  some aspects in the model that the program couldn't find, but she could
+
+Tool names: Cameo systems modeling and MagicDraw (?)
+  Houston
+
+Why not checklist?
+  Would work for only a limited
+  Needs to be demonstratable!! Needs to be proven
+  Kind of like an autograder (?)
+  Need to think more inherited rules
+  Only made for what's expected, not for the unexpected
+  How to plan for the unexpected? (what even is "unexpected"??)
+
+Traffic analogy:
+  Real edge case that an expert would know but a newbie wouldn't
+  (Raccoon case lol)
+
+Infinite list of "what ifs". Need a semantic system. Could ideally learn from every preexisting projects
+
+Objective: Augment the engineer's knowledge base
+
+Not much in the way of data. Just making an example system. Need to show the way!
+  - NEEDS TO BE VERIFIABLE AND TRANSPARENT
+  
+Maybe think of a search engine kind of model with refiniements 
+
