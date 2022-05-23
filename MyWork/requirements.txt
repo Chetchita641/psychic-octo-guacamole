@@ -1,0 +1,14 @@
+R1 The instrument shall image a target at 600–650 km according to IF-1.
+R2 The instrument shall image a target with spectral radiance of ABC (*plot) according to IF-1.
+R3 The instrument shall accept Command A according to IF-2.
+R4 The instrument shall transmit image data according to IF-2 in less than 0.2 s after receiving Command A.
+R5 The instrument shall have a resolution better than 1 unit.
+R6 The instrument shall have a FOV greater than 2◦
+R7 The instrument shall provide telemetry data every 1 s according to IF-2.
+R8 The instrument shall accept power according to IF-3.
+R9 The instrument shall consume less than 600 W of electrical power.
+R10 The instrument shall withstand a mechanical load of 5 g in any direction on IF-4.
+R11 The instrument shall fulfill its performance when subjected to a temperature between −10 ◦C and +45 ◦C at IF-4.
+R12 The instrument shall have a lifetime of at least 7 years.
+Note 1 R10 only applies during launch. All other requirements only apply once the instrument is powered on
+through IF-3.

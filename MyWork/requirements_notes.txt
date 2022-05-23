@@ -1,0 +1,48 @@
+
+R1 This requirement defines an input that the system must accept. It will be modeled directly as
+an input signal.
+
+R2 This requirement defines a characteristic of the required input defined in R1. It will be modeled
+as a property of the signal modeled to capture R1.
+
+R3 This requirement defines an input that the system must accept. It will be modeled directly as an
+input signal.
+
+R4 The requirement defines an output that the system must provide, as well as the conditions under
+which the output must be provided. It will be modeled as an output signal and a time
+dependency with the signal modeled to capture R3.
+
+R5 This requirement defines a characteristic of the required output defined in R4. It will be modeled
+as a property of the signal modeled to capture R4.
+
+R6 This requirement defines a characteristic of the required output defined in R4. It will be modeled
+as a property of the signal modeled to capture R4.
+
+R7 This requirement defines an output that the system must provide, as well as the conditions
+under which the output must be provided. It will be modeled as an output signal occurring in
+parallel to the exchanges required by R1 through R4.
+
+R8 This requirement defines an input that the system must accept. It will be modeled directly as an
+input signal. In addition, it will be modeled as a starting event that needs to occur before the
+exchanges required by R1, R2, R3, R4, and R7 can be executed (since the instrument must be
+powered in order to fulfill those requirements), and which remains active in parallel with the
+other exchanges defined in the corresponding mode of operation.
+
+R9 This requirement defines a resource limitation that the system must fulfill, in relation to the
+required input defined in R8. It will be modeled as a property of the signal modeled
+to capture R8.
+
+R10 This requirement defines an external environment in which the system needs to operate.
+It will be modeled as an input signal (mechanical energy) to the system.
+
+R11 This requirement defines an external environment in which the system needs to operate.
+It will be modeled as an input signal (thermal energy) to the system.
+
+R12 This requirement defines a constraint on how long the system needs to fulfill its requirements.
+It will be modeled as a duration constraint that describes for how long each transformation
+needs to be executed.
+
+Note 1
+This note defines modes of operation for the system, for which different sets of requirements
+apply. It leads to define a specific mode (launch) in which R10 applies and another set of modes
+in which the rest of the requirements apply, as well as the transitions between the modes.
