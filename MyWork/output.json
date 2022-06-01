@@ -1,0 +1,226 @@
+[
+  {
+    "name": "Earth",
+    "interfaces": [
+      {
+        "name": "IF-1",
+        "values": { "Pressure": { "Units": "Pa", "Max": 3e-14 } },
+        "proxy_ports": []
+      }
+    ],
+    "inputs": {},
+    "outputs": {
+      "IF-1": [
+        {
+          "name": "Earth Spectral Features",
+          "attributes": {
+            "Spectral radiance": "Plot",
+            "Flow type": "Continuous",
+            "Area": { "Units": "Deg", "Min": 2 },
+            "Distance": { "Units": "Km", "Min": 600, "Max": 650 }
+          }
+        }
+      ]
+    }
+  },
+  {
+    "name": "Instrument",
+    "interfaces": [
+      {
+        "name": "IF-1",
+        "values": { "Pressure": { "Units": "Pa", "Max": 3e-14 } },
+        "proxy_ports": []
+      },
+      {
+        "name": "IF-2",
+        "values": {
+          "Protocol": "MIL-STD-1553B",
+          "Data structure": "Packet structure definition",
+          "Voltage": { "Units": "V", "Min": 0, "Max": 5 },
+          "Impedance": { "Units": "Ohm", "Min": 76.44, "Max": 79.56 },
+          "Conducted emissions": "Plot",
+          "Radiated emissions": "Plot",
+          "Thermal conductivity": { "Units": "W/K", "Max": 200 },
+          "Connector type": "D9F"
+        },
+        "proxy_ports": ["GND", "Data+", "Data-"]
+      },
+      {
+        "name": "IF-3",
+        "values": {
+          "Voltage": { "Units": "V", "Min": 22, "Max": 28, "Normal": 24 },
+          "Impedance": { "Units": "Mohm", "Min": 1 },
+          "Conducted emision": "Plot",
+          "Conducted susceptibility": "Plot",
+          "Thermal conductivity": { "Units": "W/K", "Max": 200 },
+          "Connector Type": "D9M"
+        },
+        "proxy_ports": ["GND", "GND", "Power"]
+      },
+      {
+        "name": "IF-4",
+        "values": {
+          "Thermal conductivity": { "Units": "W/K", "Max": 5 },
+          "Contact surface": { "Units": "Cm2", "Min": 2.0, "Max": 2.5 },
+          "Footprint": "Plot"
+        },
+        "proxy_ports": []
+      }
+    ],
+    "inputs": {
+      "IF-1": [
+        {
+          "name": "Earth Spectral Features",
+          "attributes": {
+            "Spectral radiance": "Plot",
+            "Flow type": "Continuous",
+            "Area": { "Units": "Deg", "Min": 2 },
+            "Distance": { "Units": "Km", "Min": 600, "Max": 650 }
+          }
+        }
+      ],
+      "IF-2": [
+        {
+          "name": "Command A",
+          "attributes": {
+            "Message": ["current image", "last image"],
+            "Flow type": "Trigger"
+          }
+        }
+      ],
+      "IF-3": [
+        {
+          "name": "Electrical Power",
+          "attributes": {
+            "Flow type": "Continuous",
+            "Range": { "Units": "W", "Min": 0, "Max": 600 }
+          }
+        }
+      ],
+      "IF-4": [
+        {
+          "name": "Heat",
+          "attributes": {
+            "Flow type": "Continuous",
+            "Temperature": { "Units": "C", "Min": -1, "Max": 45 }
+          }
+        },
+        {
+          "name": "Acceleration",
+          "attributes": {
+            "Flow type": "Continuous",
+            "Range": { "Units": "M/S", "Min": 0, "Max": 49.0 }
+          }
+        }
+      ]
+    },
+    "outputs": {
+      "IF-2": [
+        {
+          "name": "Image Data",
+          "attributes": {
+            "Flow type": "Trigger",
+            "FOV": { "Units": "Deg", "Min": 2 },
+            "Resolution": { "Units": "Unit", "Max": 1 }
+          }
+        },
+        {
+          "name": "Telemetry",
+          "attributes": { "Flow type": { "Units": "Hz", "Min": 1, "Max": 1 } }
+        }
+      ]
+    }
+  },
+  {
+    "name": "Platform",
+    "interfaces": [
+      {
+        "name": "IF-2",
+        "values": {
+          "Protocol": "MIL-STD-1553B",
+          "Data structure": "Packet structure definition",
+          "Voltage": { "Units": "V", "Min": 0, "Max": 5 },
+          "Impedance": { "Units": "Ohm", "Min": 76.44, "Max": 79.56 },
+          "Conducted emissions": "Plot",
+          "Radiated emissions": "Plot",
+          "Thermal conductivity": { "Units": "W/K", "Max": 200 },
+          "Connector type": "D9F"
+        },
+        "proxy_ports": ["GND", "Data+", "Data-"]
+      },
+      {
+        "name": "IF-3",
+        "values": {
+          "Voltage": { "Units": "V", "Min": 22, "Max": 28, "Normal": 24 },
+          "Impedance": { "Units": "Mohm", "Min": 1 },
+          "Conducted emision": "Plot",
+          "Conducted susceptibility": "Plot",
+          "Thermal conductivity": { "Units": "W/K", "Max": 200 },
+          "Connector Type": "D9M"
+        },
+        "proxy_ports": ["GND", "GND", "Power"]
+      },
+      {
+        "name": "IF-4",
+        "values": {
+          "Thermal conductivity": { "Units": "W/K", "Max": 5 },
+          "Contact surface": { "Units": "Cm2", "Min": 2.0, "Max": 2.5 },
+          "Footprint": "Plot"
+        },
+        "proxy_ports": []
+      }
+    ],
+    "inputs": {
+      "IF-2": [
+        {
+          "name": "Image Data",
+          "attributes": {
+            "Flow type": "Trigger",
+            "FOV": { "Units": "Deg", "Min": 2 },
+            "Resolution": { "Units": "Unit", "Max": 1 }
+          }
+        },
+        {
+          "name": "Telemetry",
+          "attributes": { "Flow type": { "Units": "Hz", "Min": 1, "Max": 1 } }
+        }
+      ]
+    },
+    "outputs": {
+      "IF-2": [
+        {
+          "name": "Command A",
+          "attributes": {
+            "Message": ["current image", "last image"],
+            "Flow type": "Trigger"
+          }
+        }
+      ],
+      "IF-3": [
+        {
+          "name": "Electrical Power",
+          "attributes": {
+            "Flow type": "Continuous",
+            "Range": { "Units": "W", "Min": 0, "Max": 600 }
+          }
+        }
+      ],
+      "IF-4": [
+        {
+          "name": "Heat",
+          "attributes": {
+            "Flow type": "Continuous",
+            "Temperature": { "Units": "C", "Min": -1, "Max": 45 }
+          }
+        },
+        {
+          "name": "Acceleration",
+          "attributes": {
+            "Flow type": "Continuous",
+            "Range": { "Units": "M/S", "Min": 0, "Max": 49.0 }
+          }
+        }
+      ]
+    }
+  }
+]

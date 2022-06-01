@@ -1,4 +1,4 @@
-R1 The instrument shall image a target at 600–650 km according to IF-1.
+R1 The instrument shall image a target at 600 650 km according to IF-1.
 R2 The instrument shall image a target with spectral radiance of ABC (*plot) according to IF-1.
 R3 The instrument shall accept Command A according to IF-2.
 R4 The instrument shall transmit image data according to IF-2 in less than 0.2 s after receiving Command A.
