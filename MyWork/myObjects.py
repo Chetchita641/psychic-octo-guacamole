@@ -15,17 +15,20 @@ class Block:
 
     def add_interface(self, interface):
         self.interfaces.append(interface)
+        return True
 
     def add_input(self, name, signal):
         if name not in self.inputs:
             self.inputs[name] = []
         self.inputs[name].append(signal)
+        return True
         
 
     def add_output(self, name, signal):
         if name not in self.outputs:
             self.outputs[name] = []
         self.outputs[name].append(signal)
+        return True
 
     def to_dict(self):
         mod_inputs = {}

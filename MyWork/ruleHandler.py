@@ -17,44 +17,44 @@ def populate_interfaces():
     i1 = Interface(
         "IF-1",
         {
-            "Pressure": {"Units": "Pa", "Max": 3*10e-15}
+            "pressure": {"units": "pa", "max": 3*10e-15}
         }    
     )
     
     i2 = Interface(
         "IF-2",
         {
-            "Protocol": "MIL-STD-1553B",
-            "Data structure": "Packet structure definition",
-            "Voltage": {"Units": "V", "Min": 0, "Max": 5},
-            "Impedance": {"Units": "Ohm", "Min": (78*0.98), "Max": (78*1.02)},
-            "Conducted emissions": "Plot",
-            "Radiated emissions": "Plot",
-            "Thermal conductivity": {"Units": "W/K", "Max": 200},
-            "Connector type": "D9F"
+            "protocol": "MIL-STD-1553B",
+            "data structure": "packet structure definition",
+            "voltage": {"units": "v", "min": 0, "max": 5},
+            "impedance": {"units": "ohm", "min": (78*0.98), "max": (78*1.02)},
+            "conducted emissions": "plot",
+            "radiated emissions": "plot",
+            "thermal conductivity": {"units": "w/k", "max": 200},
+            "connector type": "d9f"
         },
-        ["GND", "Data+", "Data-"]
+        ["gnd", "data+", "data-"]
     )
     
     i3 = Interface(
         "IF-3",
         {
-            "Voltage": {"Units": "V", "Min": 22, "Max": 28, "Normal": 24},
-            "Impedance": {"Units": "Mohm", "Min": 1},
-            "Conducted emision": "Plot",
-            "Conducted susceptibility": "Plot",
-            "Thermal conductivity": {"Units": "W/K", "Max": 200},
-            "Connector Type": "D9M"
+            "voltage": {"units": "v", "min": 22, "max": 28, "normal": 24},
+            "impedance": {"units": "mohm", "min": 1},
+            "conducted emision": "plot",
+            "conducted susceptibility": "plot",
+            "thermal conductivity": {"units": "w/k", "max": 200},
+            "connector Type": "d9m"
         },
-        ["GND", "GND", "Power"]
+        ["gnd", "gnd", "power"]
     )
     
     i4 = Interface(
         "IF-4",
         {
-            "Thermal conductivity": {"Units": "W/K", "Max": 5},
-            "Contact surface": {"Units": "Cm2", "Min": 2.0, "Max": 2.5},
-            "Footprint": "Plot"
+            "thermal conductivity": {"units": "w/k", "max": 5},
+            "contact surface": {"units": "cm2", "min": 2.0, "max": 2.5},
+            "footprint": "plot"
         } 
     )
 
@@ -64,58 +64,58 @@ def populate_signals():
     esf = Signal(
         "Earth Spectral Features",
         {
-            "Spectral radiance": "Plot",
-            "Flow type": "Continuous", 
-            "Area": {"Units": "Deg", "Min": 2},
-            "Distance": {"Units": "Km", "Min": 600, "Max": 650}
+            "Spectral radiance": "plot",
+            "flow type": "continuous", 
+            "area": {"units": "deg", "min": 2},
+            "distance": {"units": "km", "min": 600, "max": 650}
         }
     )
 
     command_a = Signal(
         "Command A",
         {
-            "Message": ["current image", "last image"],
-            "Flow type": "Trigger"
+            "message": ["current image", "last image"],
+            "flow type": "trigger"
         }
     )
 
     telemetry = Signal(
         "Telemetry",
         {
-            "Flow type": {"Units": "Hz", "Min": 1, "Max": 1}
+            "flow type": {"units": "hz", "min": 1, "max": 1}
         }
     )
 
     acceleration = Signal(
         "Acceleration",
         {
-            "Flow type": "Continuous",
-            "Range": {"Units": "M/S", "Min": 0, "Max": 5*9.8}
+            "flow type": "continuous",
+            "range": {"units": "m/s", "min": 0, "max": 5*9.8}
         }
     )
 
     image_data = Signal(
-        "Image Data",
+        "Image data",
         {
-            "Flow type": "Trigger",
-            "FOV": {"Units": "Deg", "Min": 2},
-            "Resolution": {"Units": "Unit", "Max": 1}
+            "flow type": "trigger",
+            "FOV": {"units": "deg", "min": 2},
+            "resolution": {"units": "unit", "max": 1}
         }
     )
 
     heat = Signal(
         "Heat",
         {
-            "Flow type": "Continuous",
-            "Temperature": {"Units": "C", "Min": -1, "Max": 45}
+            "flow type": "continuous",
+            "temperature": {"units": "c", "min": -1, "max": 45}
         }
     )
 
     electrical_power = Signal(
         "Electrical Power",
         {
-            "Flow type": "Continuous",
-            "Range": {"Units": "W", "Min": 0, "Max": 600}
+            "flow type": "continuous",
+            "range": {"units": "w", "min": 0, "max": 600}
         }
     )
 
@@ -160,7 +160,20 @@ setup_stmts = [
 ]
 
 query_statements = [
-    "BLOCK SELECT *"
+    #"SIGNAL SELECT ALL",
+    #"SIGNAL SELECT WHERE name='Earth Spectral Features'",
+    #"SIGNAL SELECT WHERE name='Earth Spectral Features', distance>=600",
+    #"INTERFACE SELECT ALL",
+    #"INTERFACE SELECT WHERE name=IF-2",
+    #"INTERFACE SELECT WHERE voltage>=0, 'conducted emissions'=plot",
+    #"INTERFACE SELECT WHERE 'proxy port'=gnd",
+    #"BLOCK SELECT ALL",
+    #"BLOCK SELECT WHERE name='Instrument'",
+    #"BLOCK SELECT WHERE INTERFACE.name=IF-1",
+    #"BLOCK SELECT WHERE INTERFACE.pressure=*",
+    #"BLOCK SELECT WHERE Output.name=IF-1",
+    #"BLOCK SELECT WHERE SIGNAL.name=heat",
+    "BLOCK SELECT WHERE SIGNAL.'Flow type'=trigger"
 ]
 
 def main():
@@ -177,6 +190,7 @@ def main():
         resp = db.execute(stmt)
         if resp:
             print(resp)
+            print()
 
 if __name__ == "__main__":
     main()
