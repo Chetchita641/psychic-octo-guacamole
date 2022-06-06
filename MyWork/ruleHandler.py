@@ -169,10 +169,10 @@ query_statements = [
     #"INTERFACE SELECT WHERE 'proxy port'=gnd",
     #"BLOCK SELECT ALL",
     #"BLOCK SELECT WHERE name='Instrument'",
-    #"BLOCK SELECT WHERE INTERFACE.name=IF-1",
-    #"BLOCK SELECT WHERE INTERFACE.pressure=*",
-    #"BLOCK SELECT WHERE Output.name=IF-1",
-    #"BLOCK SELECT WHERE SIGNAL.name=heat",
+    "BLOCK SELECT WHERE INTERFACE.name=IF-1",
+    "BLOCK SELECT WHERE INTERFACE.pressure=*",
+    "BLOCK SELECT WHERE Output.name=IF-1",
+    "BLOCK SELECT WHERE SIGNAL.name=heat",
     "BLOCK SELECT WHERE SIGNAL.'Flow type'=trigger"
 ]
 

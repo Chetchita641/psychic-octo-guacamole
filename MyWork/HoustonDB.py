@@ -101,8 +101,6 @@ class HoustonDB:
                 buf.append(lh)
                 buf.append(op)
                 buf.append(rh)
-            elif '.' in word:
-                [buf.append(w) for w in word.split('.')]
             else:
                 buf.append(word)
 
