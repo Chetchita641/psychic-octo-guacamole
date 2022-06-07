@@ -1,8 +1,6 @@
 import json
-from multiprocessing.sharedctypes import Value
-import re
 
-operators = ['=', '!=', '<', '>', '<=', '>=']
+operators = ['=', '!=', '<', '>', '<=', '>=', '+=', '-=']
 
 class HoustonDB:
     def __init__(self, blocks=[], interfaces=[], signals=[], rules=[]):
@@ -71,7 +69,7 @@ class HoustonDB:
 
 
     def __get_op(self, s):
-        for i in range(len(s)):
+        for i in range(len(s)-1):
             if s[i] == '!' and s[i+1] == '=':
                 return '!='
             elif s[i] == '<' and s[i+1] == '=':
@@ -84,6 +82,10 @@ class HoustonDB:
                 return '<'
             elif s[i] == '>':
                 return '>'
+            elif s[i] == '+' and s[i+1] == '=':
+                return '+='
+            elif s[i] == '-' and s[i+1] == '=':
+                return '-='
         return None
 
     def __is_number(self, str):
@@ -115,8 +117,10 @@ class HoustonDB:
         words = buf
         isCat = False
         isDict = False
+        isArray = False
         bufStr = ""
         dictStr = ""
+        arrayStr = ""
         for word in words:
             if word[0] == "{":
                 isDict = True
@@ -127,6 +131,10 @@ class HoustonDB:
             elif word[0] == "'":
                 isCat = True
                 word = word.replace("'", "")
+            elif word[0] == '[':
+                isArray = True
+                word = word.replace("[", "")
+                arrayStr = "["
 
             if isDict:
                 key, val = word.split(':')
@@ -146,6 +154,7 @@ class HoustonDB:
                     out.append(dictStr)
                     dictStr = ""
                     isDict = False
+                    isEnd = False
                 
             elif isCat:
                 if bufStr:
@@ -156,6 +165,26 @@ class HoustonDB:
                     out.append(bufStr)
                     bufStr = ""
                     isCat = False
+            
+            elif isArray:
+                if ']' in word:
+                    isEnd = True
+                    word = word.replace("]", "")
+                else:
+                    isEnd = False
+                if self.__is_number(word):
+                    arrayStr += word
+                else:
+                    arrayStr += "'" + word + "'"
+                if not isEnd:
+                    arrayStr += ", "
+                else:
+                    arrayStr += ']'
+                    out.append(arrayStr)
+                    arrayStr = ""
+                    isArray = False
+                    isEnd = False
+                
             else:
                 out.append(word)
 
@@ -237,7 +266,29 @@ class HoustonDB:
                     if not isInvalid:
                         out.append(block.to_dict())
 
-        return out
+            return {'ok': True, 'resp':out}
+
+        elif words[0] == 'update':
+            updateAll = words[1] == 'all'
+            if not updateAll:
+                name = words[1]
+
+            for block in self.blocks:
+                for i in range(2, len(words[2:]), 3):
+                    if updateAll or block.name.lower() == name:
+                        lh = words[i]
+                        op = words[i+1]
+                        rh = words[i+2]
+
+                        if lh == 'name':
+                            block.name = rh
+                        if len(lh.split('.')) == 2:
+                            if lh.split('.')[1] == 'interfaces' and op == '+='
+
+                        
+
+            return {'ok': True}
+
     
     
 
@@ -284,7 +335,41 @@ class HoustonDB:
                     if not isInvalid:
                         out.append(interface.to_dict())
         
-        return out
+            return {'ok': True, 'resp': out}
+
+        elif words[0] == 'update':
+            updateAll = words[1] == 'all'
+            if not updateAll:
+                name = words[1]
+
+            for interface in self.interfaces:
+                for i in range(2, len(words[2:]), 3):
+                    if updateAll or interface.name.lower() == name:
+                        lh = words[i]
+                        op = words[i+1]
+                        rh = words[i+2]
+                        if ('{' in rh and '}' in rh) or ('[' in rh and ']' in rh):
+                            rh = eval(rh)
+                        elif self.__is_number(rh):
+                            rh = float(rh)
+                        
+                        if lh == 'name':
+                            interface.name = rh
+                        elif '.' in lh:
+                            key1, key2 = lh.split('.')
+                            if key1 in interface.values:
+                                interface.values[key1][key2] = rh
+                        elif lh == 'proxy_ports':
+                            if type(rh) == list:
+                                interface.proxy_ports = rh
+                            else:
+                                interface.proxy_ports.append(rh)
+                        else:
+                            interface.values[lh] = rh
+
+            return {'ok': True}
+
+        
 
     def __execute_signal(self, words):
         if words[0] == 'select':
@@ -319,7 +404,7 @@ class HoustonDB:
                     
                     if not isInvalid:
                         out.append(signal.to_dict())
-            return out
+            return {'ok': True, 'resp':out}
 
         elif words[0] == 'update':
             updateAll = words[1] == 'all'
@@ -328,22 +413,25 @@ class HoustonDB:
 
             for signal in self.signals:
                 for i in range(2, len(words[2:]), 3):
-                    lh = words[i]
-                    op = words[i+1]
-                    rh = words[i+2]
-                    if '{' in rh and '}' in rh:
-                        rh = eval(rh)
-                    elif self.__is_number(rh):
-                        rh = float(rh)
-                    if signal.name.lower() == name or updateAll:
+                    if updateAll or signal.name.lower() == name:
+                        lh = words[i]
+                        op = words[i+1]
+                        rh = words[i+2]
+                        if '{' in rh and '}' in rh:
+                            rh = eval(rh)
+                        elif self.__is_number(rh):
+                            rh = float(rh)
+                        
                         if lh == 'name':
-                            signal.name = lh
+                            signal.name = rh
                         elif '.' in lh:
                             key1, key2 = lh.split('.')
                             if key1 in signal.attributes:
                                 signal.attributes[key1][key2] = rh
                         else:
                             signal.attributes[lh] = rh 
+
+            return {'ok': True}
 
 
 

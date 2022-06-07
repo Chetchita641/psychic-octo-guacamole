@@ -41,7 +41,7 @@ def populate_interfaces():
         {
             "voltage": {"units": "v", "min": 22, "max": 28, "normal": 24},
             "impedance": {"units": "mohm", "min": 1},
-            "conducted emision": "plot",
+            "conducted emissions": "plot",
             "conducted susceptibility": "plot",
             "thermal conductivity": {"units": "w/k", "max": 200},
             "connector Type": "d9m"
@@ -176,8 +176,18 @@ query_statements = [
     #"BLOCK SELECT WHERE SIGNAL.'Flow type'=trigger",
     #"SIGNAL UPDATE 'Command A' 'Flow type'='Continuous'",
     #"SIGNAL UPDATE 'Command A' capacity={units:commands/sec, max:1}",
-    "SIGNAL UPDATE 'Earth Spectral Features' distance.max=750",
-    "SIGNAL SELECT WHERE name='Earth Spectral Features'",
+    #"SIGNAL UPDATE 'Earth Spectral Features' distance.max=750",
+    #"SIGNAL SELECT WHERE name='Earth Spectral Features'",
+    #"INTERFACE UPDATE 'IF-1' name=IF-5",
+    #"INTERFACE UPDATE ALL 'Conducted emissions'=Continuous",
+    #"INTERFACE UPDATE IF-2 Impedance.min=70, Impedance.max=90",     # TODO: A command would ruin the integrity of the database (needs units)
+    #"INTERFACE UPDATE IF-3 proxy_ports=[water, air, earth]",
+    #"INTERFACE SELECT ALL"
+    #"BLOCK UPDATE Earth name=Mars",
+    "BLOCK UPDATE Earth.Interfaces+=IF-2",
+    "BLOCK UPDATE Earth.Interfaces=[IF-3, IF-4]",
+    "BLOCK UPDATE Earth.inputs.IF-1+='Command A'",
+    "BLOCK SELECT Earth"
 ]
 
 def main():
@@ -192,9 +202,8 @@ def main():
 
     for stmt in query_statements:
         resp = db.execute(stmt)
-        if resp != 'null':
-            print(resp)
-            print()
+        print(resp)
+        print()
 
 if __name__ == "__main__":
     main()
