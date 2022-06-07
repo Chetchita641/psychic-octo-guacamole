@@ -14,13 +14,15 @@ def populate_blocks():
     return [earth, instrument, platform]
 
 def populate_interfaces():
+    """
     i1 = Interface(
         "IF-1",
         {
             "pressure": {"units": "pa", "max": 3*10e-15}
         }    
     )
-    
+    """
+
     i2 = Interface(
         "IF-2",
         {
@@ -58,7 +60,7 @@ def populate_interfaces():
         } 
     )
 
-    return [i1, i2, i3, i4]
+    return [i2, i3, i4]
 
 def populate_signals():
     esf = Signal(
@@ -127,6 +129,7 @@ def populate_rules():
 
 # -----------------------------------------------------------------------------------------------------------
 
+"""
 setup_stmts = [
     "ATTACH Earth IF-1",
     "ATTACH Instrument IF-1",
@@ -158,6 +161,13 @@ setup_stmts = [
     "ATTACH INPUT Instrument.IF-4 Acceleration",
     "ATTACH OUTPUT Platform.IF-4 Acceleration",
 ]
+"""
+
+setup_stmts = [
+    #"BLOCK CREATE Earth",
+    "INTERFACE CREATE IF-1 pressure={units:'pa', max:3e-15}",
+    "BLOCK CREATE Earth Interfaces=[IF-1]"
+]
 
 query_statements = [
     #"SIGNAL SELECT ALL",
@@ -184,19 +194,21 @@ query_statements = [
     #"INTERFACE UPDATE IF-3 proxy_ports=[water, air, earth]",
     #"INTERFACE SELECT ALL"
     #"BLOCK UPDATE Earth name=Mars",
-    "BLOCK UPDATE Earth.Interfaces+=IF-2",
-    "BLOCK UPDATE Earth.Interfaces=[IF-3, IF-4]",
-    "BLOCK UPDATE Earth.inputs.IF-1+='Command A'",
+    #"BLOCK UPDATE Earth Interfaces+=IF-2",
+    #"BLOCK UPDATE Earth Interfaces=[IF-3, IF-4]",
+    #"BLOCK UPDATE Earth inputs.IF-1+='Command A'",
+    "INTERFACE SELECT IF-1",
     "BLOCK SELECT Earth"
 ]
 
 def main():
-    blocks = populate_blocks()
-    interfaces = populate_interfaces()
-    signals = populate_signals()
-    rules = populate_rules()
+    #blocks = populate_blocks()
+    #interfaces = populate_interfaces()
+    #signals = populate_signals()
+    #rules = populate_rules()
 
-    db = HoustonDB(blocks, interfaces, signals, rules)    
+    #db = HoustonDB(blocks, interfaces, signals, rules)
+    db = HoustonDB()
     for stmt in setup_stmts:
         db.execute(stmt)
 

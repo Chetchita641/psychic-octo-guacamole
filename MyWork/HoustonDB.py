@@ -1,4 +1,5 @@
 import json
+from myObjects import *
 
 operators = ['=', '!=', '<', '>', '<=', '>=', '+=', '-=']
 
@@ -9,17 +10,35 @@ class HoustonDB:
         self.signals = signals
         self.rules = rules
 
+    def add_block(self, block):
+        if not any(b.name == block.name for b in self.blocks):
+            self.blocks.append(block)
+            return True
+        return False
+
     def get_block(self, name):
         for block in self.blocks:
             if block.name.lower() == name.lower():
                 return block
         return None
 
+    def add_interface(self, interface):
+        if not any(i.name == interface.name for i in self.interfaces):
+            self.interfaces.append(interface)
+            return True
+        return False
+
     def get_interface(self, name):
         for interface in self.interfaces:
             if interface.name.lower() == name.lower():
                 return interface
         return None
+
+    def add_signal(self, signal):
+        if not any(s.name == signal.name for s in self.signals):
+            self.signals.append(signal)
+            return True
+        return False
 
     def get_signal(self, name):
         for signal in self.signals:
@@ -143,7 +162,7 @@ class HoustonDB:
                     val = val.replace('}', '')
                 else:
                     isEnd = False
-                if self.__is_number(val):
+                if self.__is_number(val) or (val[0] == "'" and val[-1] == "'"):
                     dictStr += "'" + key + "':" + val
                 else:
                     dictStr += "'" + key + "':'" + val + "'"
@@ -213,6 +232,7 @@ class HoustonDB:
         return {'ok': resp}
 
     def __execute_block(self, words):
+        ok = True
         out = []
         if words[0] == 'select':
             if words[1] == 'all':
@@ -266,7 +286,10 @@ class HoustonDB:
                     if not isInvalid:
                         out.append(block.to_dict())
 
-            return {'ok': True, 'resp':out}
+            elif self.get_block(words[1]):
+                out.append(self.get_block(words[1]).to_dict())
+            else:
+                ok = False
 
         elif words[0] == 'update':
             updateAll = words[1] == 'all'
@@ -274,7 +297,7 @@ class HoustonDB:
                 name = words[1]
 
             for block in self.blocks:
-                for i in range(2, len(words[2:]), 3):
+                for i in range(2, len(words[1:]), 3):
                     if updateAll or block.name.lower() == name:
                         lh = words[i]
                         op = words[i+1]
@@ -282,17 +305,47 @@ class HoustonDB:
 
                         if lh == 'name':
                             block.name = rh
-                        if len(lh.split('.')) == 2:
-                            if lh.split('.')[1] == 'interfaces' and op == '+='
-
+                        elif lh == 'interfaces':
+                            if op == '+=':
+                                interface = self.get_interface(rh)
+                                ok = block.add_interface(interface)
+                            elif op == '=':
+                                rh = eval(rh)
+                                block.interfaces = [self.get_interface(i_name) for i_name in rh]
+                        elif 'inputs' in lh:
+                            interface = self.get_interface(lh.split('.')[1])
+                            signal = self.get_signal(rh)
+                            if interface and signal:
+                                block.add_signal('input', interface, signal)
                         
 
-            return {'ok': True}
+        elif words[0] == 'create':
+            block = Block(words[1])
+            self.add_block(block)
+            for i in range(2, len(words[2:]), 3):
+                lh = words[i]
+                op = words[i+1]
+                rh = words[i+2]
+
+                if lh == 'interfaces':
+                    if rh[0] == '[' and rh[-1] == ']':
+                        rh = eval(rh)
+                        [block.add_interface(self.get_interface(i)) for i in rh]
+
+                    
+
+
+        
+        if ok:
+            return {'ok': ok, 'resp': out}
+        else:
+            return {'ok': ok, 'detail': "Something went wrong"}
 
     
     
 
     def __execute_interface(self, words):
+        ok = True
         out = []
         if words[0] == 'select':
             if words[1] == 'all':
@@ -335,7 +388,8 @@ class HoustonDB:
                     if not isInvalid:
                         out.append(interface.to_dict())
         
-            return {'ok': True, 'resp': out}
+            elif self.get_interface(words[1]):
+                out.append(self.get_interface(words[1]).to_dict())
 
         elif words[0] == 'update':
             updateAll = words[1] == 'all'
@@ -366,9 +420,23 @@ class HoustonDB:
                                 interface.proxy_ports.append(rh)
                         else:
                             interface.values[lh] = rh
+        
+        elif words[0] == 'create':
+            interface = Interface(words[1])
+            for i in range(2, len(words[2:]), 3):
+                lh = words[i]
+                op = words[i+1]
+                rh = words[i+2]
 
-            return {'ok': True}
+                if rh[0] == '{' and rh[-1] == '}':
+                    rh = eval(rh)
+                interface.add_value(lh, rh)
+                self.add_interface(interface)
 
+        if ok:
+            return {'ok': ok, 'resp': out}
+        else:
+            return {'ok': ok, 'detail': "Unknown command"}
         
 
     def __execute_signal(self, words):
@@ -433,7 +501,11 @@ class HoustonDB:
 
             return {'ok': True}
 
+        elif self.get_signal(words[1]):
+            out.append(self.get_signal(words[1]).to_dict())
+            return {'ok': True, 'resp': out}
 
+        return {'ok': False, 'detail': "Unknown command"}
 
 
 

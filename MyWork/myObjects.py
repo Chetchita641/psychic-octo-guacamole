@@ -14,8 +14,21 @@ class Block:
         self.outputs = {}
 
     def add_interface(self, interface):
-        self.interfaces.append(interface)
-        return True
+        if not any(i.name == interface.name for i in self.interfaces):
+            self.interfaces.append(interface)
+            return True
+        return False
+
+    def add_signal(self, direction, interface, signal):
+        self.add_interface(interface)
+        if direction == 'input':
+            if interface.name not in self.inputs:
+                self.inputs[interface.name] = []
+            self.inputs[interface.name].append(signal)
+        elif direction == 'output':
+            if interface.name not in self.outputs:
+                self.outputs[interface.name] = []
+            self.outputs[interface.name].append(signal)
 
     def add_input(self, name, signal):
         if name not in self.inputs:
@@ -78,6 +91,12 @@ class Interface:
         self.name = name
         self.values = values
         self.proxy_ports = proxy_ports
+
+    def add_value(self, key, value):
+        if key not in self.values:
+            self.values[key] = value
+            return True
+        return False
 
     def to_json(self):
         return json.dumps({
