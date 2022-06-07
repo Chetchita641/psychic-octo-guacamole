@@ -86,6 +86,14 @@ class HoustonDB:
                 return '>'
         return None
 
+    def __is_number(self, str):
+        try:
+            float(str)
+            return True
+        except ValueError:
+            return False
+        
+
     def __get_keywords(self, stmt):
         isCat = False
         out = []
@@ -105,24 +113,54 @@ class HoustonDB:
                 buf.append(word)
 
         words = buf
+        isCat = False
+        isDict = False
+        bufStr = ""
+        dictStr = ""
         for word in words:
-            if isCat:
-                if word[-1] == "'":
-                    buf.append(word[:-1])
-                    out.append(' '.join(buf))
-                    isCat = False
-                else:
-                    buf.append(word)
-
+            if word[0] == "{":
+                isDict = True
+                word = word.replace("{", "")
+                dictStr = "{"
             elif word[0] == "'" and word[-1] == "'":
-                out.append(word[1:-1])
+                word = word.replace("'", "")
             elif word[0] == "'":
                 isCat = True
-                buf = []
-                buf.append(word[1:])
+                word = word.replace("'", "")
+
+            if isDict:
+                key, val = word.split(':')
+                if '}' in val:
+                    isEnd = True
+                    val = val.replace('}', '')
+                else:
+                    isEnd = False
+                if self.__is_number(val):
+                    dictStr += "'" + key + "':" + val
+                else:
+                    dictStr += "'" + key + "':'" + val + "'"
+                if not isEnd:
+                    dictStr += ", "
+                else:
+                    dictStr += '}'
+                    out.append(dictStr)
+                    dictStr = ""
+                    isDict = False
+                
+            elif isCat:
+                if bufStr:
+                    bufStr += ' '
+                bufStr += word
+                if "'" in bufStr:
+                    bufStr = bufStr.replace("'", "")
+                    out.append(bufStr)
+                    bufStr = ""
+                    isCat = False
             else:
                 out.append(word)
-        
+
+        if bufStr:
+            out.append(bufStr) 
         return out
 
     def __execute_attach(self, words):
@@ -162,6 +200,8 @@ class HoustonDB:
                                 isInvalid = True
                         elif 'interface' in lh:
                             lh = lh.split('.')[1]
+                            if ' ' in lh:
+                                lh = "'"+lh+"'"
                             stmt = "SELECT WHERE " + lh + op + rh
                             interfaces = self.__execute_interface(self.__get_keywords(stmt))
                             for interface in interfaces:
@@ -175,8 +215,21 @@ class HoustonDB:
                             lh = lh.split('.')[1]
                             if lh == 'name' and not any(i_name.lower() == rh for i_name in block.outputs.keys()):
                                 isInvalid = True
-
-                                 
+                        elif 'signal' in lh:
+                            lh = lh.split('.')[1]
+                            if ' ' in lh:
+                                lh = "'"+lh+"'"
+                            stmt = "SELECT WHERE " + lh + op + rh
+                            signals = self.__execute_signal(self.__get_keywords(stmt))
+                            found = False
+                            for signal in signals:
+                                for i_signals in block.inputs.values():
+                                    if any(i_signal.name == signal['name'] for i_signal in i_signals):
+                                        found = True
+                                for o_signals in block.outputs.values():
+                                    if any(o_signal.name == signal['name'] for o_signal in o_signals):
+                                        found = True
+                            isInvalid = not found
                         
                         if isInvalid:
                             break
@@ -187,41 +240,6 @@ class HoustonDB:
         return out
     
     
-    def __execute_signal(self, words):
-        out = []
-        if words[0] == 'select':
-            if words[1] == 'all':
-                out = [signal.to_dict() for signal in self.signals]
-            elif words[1] == 'where' and len(words) >= 5:
-                for signal in self.signals:
-                    isInvalid = False
-                    for i in range(2, len(words), 3):
-                        lh = words[i]
-                        op = words[i+1]
-                        rh = words[i+2]
-                        if lh == 'name' and op == '=':
-                            if signal.name.lower() != rh:
-                                isInvalid = True
-                        else:
-                            if lh not in signal.attributes:
-                                isInvalid = True
-                            if op == '=' and rh == '*':
-                                continue
-                            elif type(signal.attributes[lh]) == dict:
-                                if 'min' in signal.attributes[lh] and not self.__compare(signal.attributes[lh]['min'], op, rh):
-                                    isInvalid = True
-                                elif 'max' in signal.attributes[lh] and not self.__compare(signal.attributes[lh]['max'], op, rh):
-                                    isInvalid = True
-                            elif not self.__compare(signal.attributes[lh], op, rh):
-                                isInvalid = True
-                        
-                        if isInvalid:
-                            break
-                    
-                    if not isInvalid:
-                        out.append(signal.to_dict())
-
-        return out
 
     def __execute_interface(self, words):
         out = []
@@ -267,6 +285,65 @@ class HoustonDB:
                         out.append(interface.to_dict())
         
         return out
+
+    def __execute_signal(self, words):
+        if words[0] == 'select':
+            out = []
+            if words[1] == 'all':
+                out = [signal.to_dict() for signal in self.signals]
+            elif words[1] == 'where' and len(words) >= 5:
+                for signal in self.signals:
+                    isInvalid = False
+                    for i in range(2, len(words), 3):
+                        lh = words[i]
+                        op = words[i+1]
+                        rh = words[i+2]
+                        if lh == 'name' and op == '=':
+                            if signal.name.lower() != rh:
+                                isInvalid = True
+                        else:
+                            if lh not in signal.attributes:
+                                isInvalid = True
+                            if op == '=' and rh == '*':
+                                continue
+                            elif type(signal.attributes[lh]) == dict:
+                                if 'min' in signal.attributes[lh] and not self.__compare(signal.attributes[lh]['min'], op, rh):
+                                    isInvalid = True
+                                elif 'max' in signal.attributes[lh] and not self.__compare(signal.attributes[lh]['max'], op, rh):
+                                    isInvalid = True
+                            elif not self.__compare(signal.attributes[lh], op, rh):
+                                isInvalid = True
+                        
+                        if isInvalid:
+                            break
+                    
+                    if not isInvalid:
+                        out.append(signal.to_dict())
+            return out
+
+        elif words[0] == 'update':
+            updateAll = words[1] == 'all'
+            if not updateAll:
+                name = words[1]
+
+            for signal in self.signals:
+                for i in range(2, len(words[2:]), 3):
+                    lh = words[i]
+                    op = words[i+1]
+                    rh = words[i+2]
+                    if '{' in rh and '}' in rh:
+                        rh = eval(rh)
+                    elif self.__is_number(rh):
+                        rh = float(rh)
+                    if signal.name.lower() == name or updateAll:
+                        if lh == 'name':
+                            signal.name = lh
+                        elif '.' in lh:
+                            key1, key2 = lh.split('.')
+                            if key1 in signal.attributes:
+                                signal.attributes[key1][key2] = rh
+                        else:
+                            signal.attributes[lh] = rh 
 
 
 
